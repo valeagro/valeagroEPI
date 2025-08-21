@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+    h1{font-size:1.35rem;margin:0}
+        }
+      }
+    })
+
+    // Filtros
+    $('#filtroTexto').addEventListener('input', render)
+    $('#filtroData').addEventListener('input', render)
+    $('#btnLimparFiltros').addEventListener('click', ()=>{
+      $('#filtroTexto').value = ''
+      $('#filtroData').value = ''
+      render()
+    })
+
+    // Exportar CSV
+    $('#btnExport').addEventListener('click', ()=>{
+      const rows = getDB()
+      const head = ['Tipo','Nome','Matrícula','Data','Calça','Jaleco','Camisa','Bermuda']
+      const toRow = r => [r.tipo,r.nome,r.matricula,r.data,r.calca,r.jaleco,r.camisa,r.bermuda]
+      const csv = [head, ...rows.map(toRow)]
+        .map(cols => cols.map(v => '"'+String(v).replaceAll('"','""')+'"').join(','))
+        .join('\n')
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = 'controle-epis.csv'
+      a.click(); URL.revokeObjectURL(a.href)
+    })
+
+    // Imprimir (layout simples)
+    $('#btnPrint').addEventListener('click', ()=>{ window.print() })
+
+    // Primeira renderização
+    render()
+  </script>
+
+  <style>
+    /* ===== Estilo de Impressão ===== */
+    @media print{
+      body{background:white}
+      header .toolbar{display:none}
+      .card{box-shadow:none;border-color:#cbd5e1}
+      th,td{border-color:#cbd5e1}
+      .badge{filter:grayscale(1)}
+    }
+  </style>
+</body>
+</html>
