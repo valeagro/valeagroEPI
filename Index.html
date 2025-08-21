@@ -1,5 +1,293 @@
-<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle de EPIs</title>
+  <meta name="theme-color" content="#0ea5e9">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230ea5e9'/%3E%3Ctext x='50' y='58' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EE%3C/text%3E%3C/svg%3E"/>
+  <style>
+    :root{--bg:#0b1220;--card:#0f172a;--ink:#e5e7eb;--muted:#94a3b8;--pri:#0ea5e9;--ok:#16a34a;--warn:#d97706;--err:#dc2626}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#0b1220,#0b1220 60%,#0a0f1a);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial}
+    .container{max-width:980px;margin:0 auto;padding:20px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:12px;background:var(--pri);display:grid;place-items:center;font-weight:700}
     h1{font-size:1.35rem;margin:0}
+    .card{background:var(--card);border:1px solid #1f2937;border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .grid{display:grid;gap:12px}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    label{font-size:.9rem;color:var(--muted)}
+    input,select,button{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #273244;background:#0b1324;color:var(--ink);outline:none}
+    input[type="date"]{padding:8px 10px}
+    button{cursor:pointer;border-color:#1f2a44}
+    .btn{background:#111c33}
+    .btn:hover{background:#0e1a2f}
+    .btn-primary{background:var(--pri);color:#07131c}
+    .btn-primary:hover{filter:brightness(.95)}
+    .btn-danger{background:var(--err)}
+    .btn-danger:hover{filter:brightness(.95)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    table{width:100%;border-collapse:collapse;font-size:.92rem}
+    th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:left}
+    th{color:#cbd5e1;font-weight:700}
+    tfoot td{font-weight:700}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.8rem}
+    .Entrada{background:rgba(22,163,74,.15);color:#86efac}
+    .Saída{background:rgba(220,38,38,.18);color:#fecaca}
+    @media (max-width:700px){
+      .grid.cols-2{grid-template-columns:1fr}
+      .grid.cols-3{grid-template-columns:1fr}
+      table{font-size:.88rem}
+      th:nth-child(4), td:nth-child(4){display:none} /* esconde Data no mobile para caber melhor */
+    }
+    .hint{font-size:.85rem;color:var(--muted)}
+    .footer{opacity:.7;text-align:center;margin-top:14px;font-size:.8rem}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">EPI</div>
+        <div>
+          <h1>Controle de Entrada e Saída de EPIs</h1>
+          <div class="hint">PWA offline • instale no celular e use mesmo sem internet</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="btnExport" class="btn">Exportar CSV</button>
+        <button id="btnPrint" class="btn">Imprimir</button>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="titulo-form">
+      <h2 id="titulo-form" style="margin:0 0 8px 0;font-size:1.1rem">Novo Registro</h2>
+      <div class="grid cols-3">
+        <div>
+          <label for="tipo">Tipo</label>
+          <select id="tipo">
+            <option>Entrada</option>
+            <option>Saída</option>
+          </select>
+        </div>
+        <div>
+          <label for="nome">Nome</label>
+          <input id="nome" placeholder="Ex.: João Silva" />
+        </div>
+        <div>
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" placeholder="Ex.: 12345" />
+        </div>
+        <div>
+          <label for="data">Data</label>
+          <input id="data" type="date" />
+        </div>
+        <div>
+          <label for="calca">Calça</label>
+          <input id="calca" type="number" min="0" step="1" value="0" />
+        </div>
+        <div>
+          <label for="jaleco">Jaleco</label>
+          <input id="jaleco" type="number" min="0" step="1" value="0" />
+        </div>
+        <div>
+          <label for="camisa">Camisa</label>
+          <input id="camisa" type="number" min="0" step="1" value="0" />
+        </div>
+        <div>
+          <label for="bermuda">Bermuda</label>
+          <input id="bermuda" type="number" min="0" step="1" value="0" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button id="btnSalvar" class="btn-primary">Salvar registro</button>
+        <button id="btnLimpar" class="btn">Limpar</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Dica: quantidades negativas não são permitidas. Para registrar devoluções, escolha <b>Saída</b>.</div>
+    </section>
+
+    <section class="card" style="margin-top:16px" aria-labelledby="titulo-lista">
+      <h2 id="titulo-lista" style="margin:0 0 8px 0;font-size:1.1rem">Registros</h2>
+      <div class="row" style="margin-bottom:10px">
+        <input id="filtroTexto" placeholder="Filtrar por nome, matrícula ou tipo..." style="max-width:400px">
+        <input id="filtroData" type="date" style="max-width:200px">
+        <button id="btnLimparFiltros" class="btn">Limpar filtros</button>
+      </div>
+      <div style="overflow:auto">
+        <table id="tabela">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Nome</th>
+              <th>Matrícula</th>
+              <th>Data</th>
+              <th>Calça</th>
+              <th>Jaleco</th>
+              <th>Camisa</th>
+              <th>Bermuda</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Totais (visíveis):</td>
+              <td id="totCalca">0</td>
+              <td id="totJaleco">0</td>
+              <td id="totCamisa">0</td>
+              <td id="totBermuda">0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer">Dados salvos no aparelho (localStorage). Instale para atalho na tela inicial.</div>
+  </div>
+
+  <script>
+    // ===== PWA: registrar Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('sw.js').catch(console.error)
+      })
+    }
+
+    // ===== Utilidades
+    const $ = sel => document.querySelector(sel)
+    const form = {
+      tipo: $('#tipo'), nome: $('#nome'), matricula: $('#matricula'), data: $('#data'),
+      calca: $('#calca'), jaleco: $('#jaleco'), camisa: $('#camisa'), bermuda: $('#bermuda')
+    }
+    const tabelaBody = document.querySelector('#tabela tbody')
+    const totals = { calca: $('#totCalca'), jaleco: $('#totJaleco'), camisa: $('#totCamisa'), bermuda: $('#totBermuda') }
+
+    // Data padrão = hoje
+    (function setHoje(){
+      const tz = new Date().toLocaleString('en-US', { timeZone: 'America/Recife' });
+      const d = new Date(tz)
+      const yyyy = d.getFullYear(), mm = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0')
+      form.data.value = `${yyyy}-${mm}-${dd}`
+    })()
+
+    // Banco local
+    const STORAGE_KEY = 'epi-registros-v1'
+    const getDB = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    const setDB = (rows) => localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
+
+    // Render
+    function render(){
+      const filtroTexto = $('#filtroTexto').value.trim().toLowerCase()
+      const filtroData = $('#filtroData').value
+      const rows = getDB()
+        .filter(r => !filtroTexto || `${r.tipo} ${r.nome} ${r.matricula}`.toLowerCase().includes(filtroTexto))
+        .filter(r => !filtroData || r.data === filtroData)
+
+      tabelaBody.innerHTML = ''
+      let tCal=0,tJa=0,tCa=0,tBe=0
+
+      for(const r of rows){
+        const tr = document.createElement('tr')
+        const badge = `<span class="badge ${r.tipo}">${r.tipo}</span>`
+        tr.innerHTML = `
+          <td>${badge}</td>
+          <td>${escapeHTML(r.nome)}</td>
+          <td>${escapeHTML(r.matricula)}</td>
+          <td>${r.data}</td>
+          <td>${r.calca}</td>
+          <td>${r.jaleco}</td>
+          <td>${r.camisa}</td>
+          <td>${r.bermuda}</td>
+          <td>
+            <button data-id="${r.id}" class="btn btn-sm btn-edit">Editar</button>
+            <button data-id="${r.id}" class="btn-danger btn-sm btn-del">Excluir</button>
+          </td>`
+        tabelaBody.appendChild(tr)
+        tCal += r.calca; tJa += r.jaleco; tCa += r.camisa; tBe += r.bermuda
+      }
+      totals.calca.textContent = tCal
+      totals.jaleco.textContent = tJa
+      totals.camisa.textContent = tCa
+      totals.bermuda.textContent = tBe
+    }
+
+    function escapeHTML(str=''){
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]))
+    }
+
+    // Salvar
+    $('#btnSalvar').addEventListener('click', () => {
+      const payload = {
+        id: crypto.randomUUID(),
+        tipo: form.tipo.value,
+        nome: form.nome.value.trim(),
+        matricula: form.matricula.value.trim(),
+        data: form.data.value,
+        calca: toInt(form.calca.value),
+        jaleco: toInt(form.jaleco.value),
+        camisa: toInt(form.camisa.value),
+        bermuda: toInt(form.bermuda.value)
+      }
+      // validações
+      if(!payload.nome){alert('Informe o Nome'); return}
+      if(!payload.matricula){alert('Informe a Matrícula'); return}
+      if(!payload.data){alert('Informe a Data'); return}
+      if([payload.calca,payload.jaleco,payload.camisa,payload.bermuda].some(v=>v<0)){alert('Quantidade não pode ser negativa.');return}
+
+      const db = getDB(); db.push(payload); setDB(db); render(); limpar()
+    })
+
+    function toInt(v){
+      const n = parseInt(v,10); return isNaN(n)?0:n
+    }
+
+    function limpar(){
+      form.calca.value = form.jaleco.value = form.camisa.value = form.bermuda.value = 0
+      form.tipo.value = 'Entrada'
+    }
+    $('#btnLimpar').addEventListener('click', limpar)
+
+    // Editar / Excluir (delegação)
+    tabelaBody.addEventListener('click', (ev)=>{
+      const btn = ev.target.closest('button'); if(!btn) return
+      const id = btn.getAttribute('data-id'); if(!id) return
+      if(btn.classList.contains('btn-del')){
+        if(confirm('Excluir este registro?')){
+          setDB(getDB().filter(r=>r.id!==id)); render()
+        }
+      } else if(btn.classList.contains('btn-edit')){
+        const r = getDB().find(r=>r.id===id); if(!r) return
+        // carrega no formulário
+        form.tipo.value = r.tipo
+        form.nome.value = r.nome
+        form.matricula.value = r.matricula
+        form.data.value = r.data
+        form.calca.value = r.calca
+        form.jaleco.value = r.jaleco
+        form.camisa.value = r.camisa
+        form.bermuda.value = r.bermuda
+        // ao salvar, substitui
+        const oldSalvar = $('#btnSalvar').onclick
+        $('#btnSalvar').onclick = ()=>{
+          const upd = {
+            ...r,
+            tipo: form.tipo.value,
+            nome: form.nome.value.trim(),
+            matricula: form.matricula.value.trim(),
+            data: form.data.value,
+            calca: toInt(form.calca.value),
+            jaleco: toInt(form.jaleco.value),
+            camisa: toInt(form.camisa.value),
+            bermuda: toInt(form.bermuda.value)
+          }
+          if(!upd.nome||!upd.matricula||!upd.data){alert('Preencha Nome, Matrícula e Data.');return}
+          const db = getDB().map(x=>x.id===id?upd:x); setDB(db); render(); limpar();
+          $('#btnSalvar').onclick = oldSalvar
         }
       }
     })
