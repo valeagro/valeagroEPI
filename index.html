@@ -1,382 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Controle de EPIs</title>
-<style>
-  :root{--bg:#0b1220;--card:#0f172a;--ink:#e5e7eb;--muted:#94a3b8;--pri:#0ea5e9;--ok:#16a34a;--err:#dc2626}
-  html,body{height:100%}
-  body{margin:0;background:#0b1220;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-  .container{max-width:980px;margin:0 auto;padding:18px}
-  header{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .brand{display:flex;gap:10px;align-items:center}
-  .logo{width:40px;height:40px;border-radius:10px;background:var(--pri);display:grid;place-items:center;font-weight:700;color:#06131c}
-  h1{font-size:1.2rem;margin:0}
-  .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .grid{display:grid;gap:10px}
-  .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-  @media(max-width:800px){.cols-3,.cols-4{grid-template-columns:1fr 1fr}}
-  @media(max-width:520px){.cols-3,.cols-4{grid-template-columns:1fr}}
-  label{font-size:.9rem;color:var(--muted)}
-  input,select,button{width:100%;padding:10px;border-radius:12px;border:1px solid #273244;background:#0b1324;color:var(--ink);outline:none}
-  input[type="number"]{text-align:center}
-  button{cursor:pointer}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{background:#111c33}
-  .btn:hover{background:#0e1a2f}
-  .btn-ghost{background:transparent;border:1px dashed #2a3a5a}
-  .btn-primary{background:var(--pri);color:#06131c}
-  .btn-danger{background:var(--err)}
-  table{width:100%;border-collapse:collapse}
-  th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:center}
-  th{color:#cbd5e1}
-  tfoot td{font-weight:700}
-  .hint{font-size:.85rem;color:var(--muted)}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;background:#13233f}
-  .tag{font-size:.78rem;color:var(--muted)}
-  @media print{
-    body{background:white;color:black}
-    header,.noprint{display:none!important}
-    .card{box-shadow:none;border-color:#cbd5e1}
-    th,td{border-color:#cbd5e1;color:black}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b6e4f"/>
+  <title>Agrovale — Controle EPIs (Herbicida)</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">EPI</div>
-        <div>
-          <h1>Controle de Entrada e Saída de EPIs</h1>
-          <div class="tag">Funciona offline (LocalStorage) • Exporta CSV • WhatsApp • Impressão</div>
-        </div>
-      </div>
-      <div class="toolbar noprint">
-        <button id="btnExportCSV" class="btn">Exportar CSV</button>
-        <button id="btnWhats" class="btn">WhatsApp</button>
-        <button id="btnPrint" class="btn">Imprimir</button>
-        <button id="btnExportJSON" class="btn">Exportar JSON</button>
-        <label class="btn-ghost" for="impJSON" style="padding:10px 12px">Importar JSON</label>
-        <input id="impJSON" type="file" accept="application/json" hidden>
-        <button id="btnClearAll" class="btn-danger">Apagar Tudo</button>
-      </div>
-    </header>
+  <header>
+    <h1>Agrovale — EPIs (Herbicida)</h1>
+    <p class="subtitle">Controle de entradas e saídas · Funciona offline</p>
+  </header>
 
-    <!-- FORM -->
-    <section class="card" aria-labelledby="titulo-form">
-      <h2 id="titulo-form" style="margin:0 0 8px;font-size:1.05rem">Novo registro</h2>
-      <div class="grid cols-4">
-        <div>
-          <label for="tipo">Tipo</label>
-          <select id="tipo">
-            <option>Entrada</option>
-            <option>Saída</option>
+  <main>
+    <section class="form-card">
+      <h2>Novo registro</h2>
+      <form id="epi-form" autocomplete="off">
+        <label>
+          Nome do colaborador
+          <input id="employee" required placeholder="Ex: João Silva" />
+        </label>
+        <label>
+          Matrícula / ID
+          <input id="employee-id" placeholder="Opcional" />
+        </label>
+        <label>
+          EPI
+          <input id="epi-name" required placeholder="Ex: Máscara P3" />
+        </label>
+        <label>
+          Quantidade
+          <input id="quantity" type="number" min="1" value="1" required />
+        </label>
+        <label>
+          Ação
+          <select id="action">
+            <option value="saida">Saída</option>
+            <option value="entrada">Entrada</option>
           </select>
+        </label>
+        <div class="buttons">
+          <button type="submit">Registrar</button>
+          <button type="button" id="clear-btn" class="secondary">Limpar</button>
         </div>
-        <div>
-          <label for="nome">Nome</label>
-          <input id="nome" placeholder="Ex.: João Silva">
-        </div>
-        <div>
-          <label for="matricula">Matrícula</label>
-          <input id="matricula" placeholder="Ex.: 12345">
-        </div>
-        <div>
-          <label for="data">Data</label>
-          <input id="data" type="date">
-        </div>
-        <div>
-          <label for="calca">Calça</label>
-          <input id="calca" type="number" min="0" step="1" value="0">
-        </div>
-        <div>
-          <label for="jaleco">Jaleco</label>
-          <input id="jaleco" type="number" min="0" step="1" value="0">
-        </div>
-        <div>
-          <label for="camisa">Camisa</label>
-          <input id="camisa" type="number" min="0" step="1" value="0">
-        </div>
-        <div>
-          <label for="bermuda">Bermuda</label>
-          <input id="bermuda" type="number" min="0" step="1" value="0">
-        </div>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button id="btnSalvar" class="btn-primary">Salvar</button>
-        <button id="btnLimparForm" class="btn">Limpar formulário</button>
-      </div>
-      <div class="hint" style="margin-top:6px">Dica: use <b>Entrada</b> para recebimento e <b>Saída</b> para entrega/devolução. Quantidades não podem ser negativas.</div>
+      </form>
     </section>
 
-    <!-- LISTA / FILTROS -->
-    <section class="card" style="margin-top:14px" aria-labelledby="titulo-lista">
-      <h2 id="titulo-lista" style="margin:0 0 8px;font-size:1.05rem">Registros</h2>
-      <div class="row noprint" style="margin-bottom:8px">
-        <input id="filtroTexto" placeholder="Filtrar por nome, matrícula ou tipo..." style="max-width:320px">
-        <input id="filtroData" type="date" style="max-width:180px">
-        <button id="btnLimparFiltros" class="btn">Limpar filtros</button>
+    <section class="list-card">
+      <h2>Registros</h2>
+      <div class="controls">
+        <input id="search" placeholder="Pesquisar por nome, EPI ou ação" />
+        <button id="export-balance-btn" class="secondary">Gerar Balanço (Dia)</button>
+        <button id="export-transactions-btn">Exportar Log (Tudo)</button>
+        <button id="clear-all" class="danger">Apagar todos</button>
       </div>
-      <div style="overflow:auto">
-        <table id="tabela">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Nome</th>
-              <th>Matrícula</th>
-              <th>Data</th>
-              <th>Calça</th>
-              <th>Jaleco</th>
-              <th>Camisa</th>
-              <th>Bermuda</th>
-              <th class="noprint">Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-          <tfoot>
-            <tr>
-              <td colspan="4" style="text-align:right">Totais (visíveis):</td>
-              <td id="totCalca">0</td>
-              <td id="totJaleco">0</td>
-              <td id="totCamisa">0</td>
-              <td id="totBermuda">0</td>
-              <td class="noprint"></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <ul id="records"></ul>
     </section>
+  </main>
 
-    <div class="hint" style="margin-top:10px">Dados armazenados no dispositivo (LocalStorage). Para backup, use Exportar JSON.</div>
-  </div>
+  <footer>
+    <small>Agrovale — Herbicida · PWA · LocalStorage</small>
+  </footer>
 
-<script>
-(() => {
-  const KEY = 'valeagro-epi-registros-v1';
+  <div id="toast" class="toast" hidden></div>
 
-  // refs
-  const $ = (s)=>document.querySelector(s);
-  const form = {
-    tipo: $('#tipo'), nome: $('#nome'), matricula: $('#matricula'), data: $('#data'),
-    calca: $('#calca'), jaleco: $('#jaleco'), camisa: $('#camisa'), bermuda: $('#bermuda')
-  };
-  const tbody = document.querySelector('#tabela tbody');
-  const totals = { calca: $('#totCalca'), jaleco: $('#totJaleco'), camisa: $('#totCamisa'), bermuda: $('#totBermuda') };
+  <dialog id="export-modal">
+    <form id="export-balance-form">
+      <h3>Gerar Balanço Diário</h3>
+      <p>Preencha para calcular o balanço de um EPI em um dia específico.</p>
+      
+      <label>
+        Data para o balanço
+        <input type="date" id="export-date" required />
+      </label>
+      
+      <label>
+        Nome exato do EPI
+        <input id="export-epi-name" required placeholder="Ex: Máscara P3" />
+      </label>
 
-  // helpers
-  const uid = () => (crypto?.randomUUID?.() || 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-  const toInt = v => { const n = parseInt(v,10); return isNaN(n) ? 0 : n; };
-  const getDB = () => JSON.parse(localStorage.getItem(KEY) || '[]');
-  const setDB = (rows) => localStorage.setItem(KEY, JSON.stringify(rows));
-  const escapeHTML = (str='') => String(str).replace(/[&<>\"']/g, s => ({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+      <label>
+        Saldo Anterior (do dia anterior)
+        <input id="export-saldo-anterior" type="number" min="0" value="0" required />
+      </label>
 
-  // set hoje (America/Recife)
-  (function setHoje(){
-    try {
-      const tz = new Date().toLocaleString('en-US',{timeZone:'America/Recife'});
-      const d = new Date(tz);
-      const yyyy = d.getFullYear(), mm = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
-      form.data.value = `${yyyy}-${mm}-${dd}`;
-    } catch { /* fallback */ }
-  })();
-
-  // render
-  function render(){
-    const texto = $('#filtroTexto').value.trim().toLowerCase();
-    const fData = $('#filtroData').value;
-    const rows = getDB()
-      .filter(r => !texto || (`${r.tipo} ${r.nome} ${r.matricula}`).toLowerCase().includes(texto))
-      .filter(r => !fData || r.data === fData);
-
-    tbody.innerHTML = '';
-    let tCal=0,tJa=0,tCa=0,tBe=0;
-
-    for(const r of rows){
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><span class="badge">${escapeHTML(r.tipo)}</span></td>
-        <td>${escapeHTML(r.nome)}</td>
-        <td>${escapeHTML(r.matricula)}</td>
-        <td>${escapeHTML(r.data)}</td>
-        <td>${r.calca}</td>
-        <td>${r.jaleco}</td>
-        <td>${r.camisa}</td>
-        <td>${r.bermuda}</td>
-        <td class="noprint">
-          <button class="btn" data-act="edit" data-id="${r.id}">Editar</button>
-          <button class="btn-danger" data-act="del" data-id="${r.id}">Excluir</button>
-        </td>`;
-      tbody.appendChild(tr);
-      tCal+=r.calca; tJa+=r.jaleco; tCa+=r.camisa; tBe+=r.bermuda;
+      <div class="modal-buttons">
+        <button type="button" id="modal-cancel-btn" class="secondary">Cancelar</button>
+        <button type="submit">Gerar CSV</button>
+      </div>
+    </form>
+  </dialog>
+  <script defer src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => console.warn('Falha ao registrar SW:', err));
     }
-    totals.calca.textContent = tCal;
-    totals.jaleco.textContent = tJa;
-    totals.camisa.textContent = tCa;
-    totals.bermuda.textContent = tBe;
-  }
-
-  // salvar
-  $('#btnSalvar').addEventListener('click', () => {
-    const payload = {
-      id: uid(),
-      tipo: form.tipo.value,
-      nome: form.nome.value.trim(),
-      matricula: form.matricula.value.trim(),
-      data: form.data.value,
-      calca: toInt(form.calca.value),
-      jaleco: toInt(form.jaleco.value),
-      camisa: toInt(form.camisa.value),
-      bermuda: toInt(form.bermuda.value)
-    };
-    if(!payload.nome){alert('Informe o Nome.'); return;}
-    if(!payload.matricula){alert('Informe a Matrícula.'); return;}
-    if(!payload.data){alert('Informe a Data.'); return;}
-    if([payload.calca,payload.jaleco,payload.camisa,payload.bermuda].some(v=>v<0)){alert('Quantidade não pode ser negativa.'); return;}
-
-    const db = getDB(); db.push(payload); setDB(db);
-    limparForm(); render();
-  });
-
-  // limpar form
-  function limparForm(){
-    form.tipo.value = 'Entrada';
-    form.calca.value = form.jaleco.value = form.camisa.value = form.bermuda.value = 0;
-    // mantém nome/matrícula/data para cadastros repetidos se quiser
-  }
-  $('#btnLimparForm').addEventListener('click', limparForm);
-
-  // delegação ações tabela
-  tbody.addEventListener('click', (ev)=>{
-    const btn = ev.target.closest('button'); if(!btn) return;
-    const id = btn.getAttribute('data-id'); if(!id) return;
-    const act = btn.getAttribute('data-act');
-    const db = getDB();
-    const idx = db.findIndex(x=>x.id===id);
-    if(idx<0) return;
-    if(act==='del'){
-      if(confirm('Excluir este registro?')){
-        db.splice(idx,1); setDB(db); render();
-      }
-    } else if(act==='edit'){
-      const r = db[idx];
-      form.tipo.value = r.tipo;
-      form.nome.value = r.nome;
-      form.matricula.value = r.matricula;
-      form.data.value = r.data;
-      form.calca.value = r.calca;
-      form.jaleco.value = r.jaleco;
-      form.camisa.value = r.camisa;
-      form.bermuda.value = r.bermuda;
-
-      // salvar como atualização
-      const originalOnClick = $('#btnSalvar').onclick;
-      $('#btnSalvar').onclick = ()=>{
-        const upd = {
-          ...r,
-          tipo: form.tipo.value,
-          nome: form.nome.value.trim(),
-          matricula: form.matricula.value.trim(),
-          data: form.data.value,
-          calca: toInt(form.calca.value),
-          jaleco: toInt(form.jaleco.value),
-          camisa: toInt(form.camisa.value),
-          bermuda: toInt(form.bermuda.value)
-        };
-        if(!upd.nome || !upd.matricula || !upd.data){alert('Preencha Nome, Matrícula e Data.'); return;}
-        db[idx] = upd; setDB(db); render(); limparForm();
-        $('#btnSalvar').onclick = originalOnClick; // restaura comportamento
-      };
-    }
-  });
-
-  // filtros
-  $('#filtroTexto').addEventListener('input', render);
-  $('#filtroData').addEventListener('input', render);
-  $('#btnLimparFiltros').addEventListener('click', ()=>{ $('#filtroTexto').value=''; $('#filtroData').value=''; render(); });
-
-  // export CSV (somente visíveis)
-  $('#btnExportCSV').addEventListener('click', ()=>{
-    const texto = $('#filtroTexto').value.trim().toLowerCase();
-    const fData = $('#filtroData').value;
-    const rows = getDB()
-      .filter(r => !texto || (`${r.tipo} ${r.nome} ${r.matricula}`).toLowerCase().includes(texto))
-      .filter(r => !fData || r.data === fData);
-
-    const head = ['Tipo','Nome','Matrícula','Data','Calça','Jaleco','Camisa','Bermuda'];
-    const toRow = r => [r.tipo,r.nome,r.matricula,r.data,r.calca,r.jaleco,r.camisa,r.bermuda];
-    const csv = [head, ...rows.map(toRow)]
-      .map(cols => cols.map(v => '"'+String(v).replaceAll('"','""')+'"').join(','))
-      .join('\n');
-
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
-    a.download = 'controle-epis.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  // imprimir (usa a tabela visível)
-  $('#btnPrint').addEventListener('click', ()=>window.print());
-
-  // WhatsApp (somente visíveis)
-  $('#btnWhats').addEventListener('click', ()=>{
-    const texto = $('#filtroTexto').value.trim().toLowerCase();
-    const fData = $('#filtroData').value;
-    const rows = getDB()
-      .filter(r => !texto || (`${r.tipo} ${r.nome} ${r.matricula}`).toLowerCase().includes(texto))
-      .filter(r => !fData || r.data === fData);
-
-    if(rows.length===0){ alert('Nenhum registro para enviar. Ajuste os filtros.'); return; }
-
-    let msg = '📋 Controle de EPIs (registros filtrados):\n\n';
-    for(const r of rows){
-      msg += `• ${r.tipo} — ${r.data}\n👤 ${r.nome} (Mat: ${r.matricula})\n`;
-      msg += `Calça: ${r.calca} | Jaleco: ${r.jaleco} | Camisa: ${r.camisa} | Bermuda: ${r.bermuda}\n\n`;
-    }
-    const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
-    window.open(url, '_blank');
-  });
-
-  // Exportar/Importar JSON (backup)
-  $('#btnExportJSON').addEventListener('click', ()=>{
-    const db = getDB();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));
-    a.download = 'controle-epis-backup.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  $('#impJSON').addEventListener('change', async (ev)=>{
-    const file = ev.target.files?.[0]; if(!file) return;
-    try{
-      const text = await file.text();
-      const arr = JSON.parse(text);
-      if(!Array.isArray(arr)) throw new Error('JSON inválido');
-      // evita ids duplicados
-      const byId = new Map(getDB().map(x=>[x.id,x]));
-      for(const r of arr){ if(!r.id) r.id = uid(); byId.set(r.id, r); }
-      setDB(Array.from(byId.values())); render();
-      alert('Importação concluída!');
-    }catch(e){ alert('Falha ao importar JSON: ' + e.message); }
-    ev.target.value = '';
-  });
-
-  // limpar tudo
-  $('#btnClearAll').addEventListener('click', ()=>{
-    if(confirm('Apagar TODOS os registros salvos neste dispositivo?')){
-      localStorage.removeItem(KEY);
-      render();
-    }
-  });
-
-  // inicial
-  render();
-})();
-</script>
+  </script>
 </body>
 </html>
